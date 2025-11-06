@@ -138,3 +138,51 @@ city_state = homicides_df |>
 
 ```
 
+```{r}
+baltimore_df = city_state |>
+  filter(city_state == "Baltimore, MD")
+
+baltimore_test = prop.test(
+  x = baltimore_df$unsolved_homicides,
+  n = baltimore_df$total_homicides
+) 
+baltimore_test
+
+baltimore_table = baltimore_test |>
+  broom::tidy()
+baltimore_table
+
+```
+
+```{r}
+city_results = 
+  city_state |>
+  mutate(
+    test_result = map2(unsolved_homicides, total_homicides, ~prop.test(.x, .y))
+  )
+
+city_results_tidy = 
+  city_results |>
+  mutate(
+    tidy_res = map(test_result, broom::tidy)
+  ) |>
+  unnest(tidy_res) |> 
+  select(city_state, total_homicides, unsolved_homicides, estimate, conf.low, conf.high)
+city_results_tidy
+```
+
+```{r}
+city_results_tidy |>
+  mutate(
+    city_state = fct_reorder(city_state, estimate)
+  ) |>
+  ggplot(aes(x = estimate, y = city_state)) +
+  geom_point() +
+  geom_errorbar(
+    aes(xmin = conf.low, xmax = conf.high),
+    width = 0.2, color = "gray40"
+  ) +
+  theme_minimal(base_size = 13)
+
+```
+
