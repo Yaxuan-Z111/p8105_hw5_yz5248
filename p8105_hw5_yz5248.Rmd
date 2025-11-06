@@ -9,6 +9,7 @@ output: github_document
 library(tidyverse)
 library(ggplot2)
 library(broom)
+library(readr)
 ```
 
 # Problem 1
@@ -109,5 +110,31 @@ estimate_mu = sim_results_df |>
   geom_point(aes(y = mean_mu_hat_reject, color = "Rejected samples")) 
 
 estimate_mu
+```
+
+# Problem 3
+```{r}
+homicides_df = read_csv("homicide-data.csv")
+```
+The dataset contains variables: "uid", "reported_date", "victim_last", "victim_first", "victim_race", "victim_age", "victim_sex", "city", "state", "lat", "lon", "disposition"  
+
+```{r}
+
+city_state = homicides_df |>
+  mutate(
+    city_state = str_c(city, ", ", state),
+    unsolved = if_else(
+      disposition %in% c("Closed without arrest", "Open/No arrest"),
+      1, 0
+    )
+  ) |>
+  group_by(city_state) |>
+  summarise(
+    total_homicides = n(),
+    unsolved_homicides = sum(unsolved),
+    .groups = "drop"
+  ) |>
+  view()
+
 ```
 
