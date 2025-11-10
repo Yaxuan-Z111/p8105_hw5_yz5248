@@ -32,8 +32,8 @@ bday_sim = function(n_room){
 ```{r}
 bday_sim_results =
   expand_grid(
-    bdays = 5:50,
-    iter = 5:50
+    bdays = 2:50,
+    iter = 1:10000
   ) |>
   mutate(
     result = map_lgl(bdays, bday_sim)
@@ -51,7 +51,9 @@ bday_sim_results |>
   ggplot(aes(x = bdays, y = prob_repeat)) + 
   geom_point() +
   geom_line()
+bday_sim_results
 ```
+The simulation plot demonstrates that as group size increases, the probability of shared birthdays grows rapidly, reaching about 50% around 23 people and approaching 100% by 50 people — a clear empirical verification of the birthday paradox.
 
 # Problem 2
 ```{r}
@@ -87,7 +89,6 @@ sim_results_df =
     mean_mu_hat = mean(mu_hat),
     mean_mu_hat_reject = mean(mu_hat[p_value < 0.05])
   )
-
 sim_results_df
 ```
 
@@ -99,7 +100,10 @@ p_power = sim_results_df |>
   geom_point()
 p_power
 ```
-
+The plot shows a positive association between effect size and power:    
+As effect size increases, the power of the test also increases.  
+When effect size equals to 0 the power is very low (close to the significance level, around 0.05–0.1), meaning the test rarely rejects the null hypothesis when it is true.  
+As effect size increases to about 2, the power rises sharply (around 0.5), indicating the test becomes more capable of detecting the effect.  
 ## plot 2
 ```{r}
 estimate_mu = sim_results_df |>
@@ -111,11 +115,13 @@ estimate_mu = sim_results_df |>
 
 estimate_mu
 ```
+From the plot, we could find that the blue line is systematically higher than the red line for small mu values. The average mu across all samples is approximately unbiased for the true mu, but the average mu among samples where the null is rejected is biased upward, especially for small mu. This happens because we condition on a rare event (rejection), which tends to occur when the observed effect size is large — demonstrating selection bias in inference after testing.
 
 # Problem 3
 ```{r}
 homicides_df = read_csv("homicide-data.csv")
 ```
+The dataset compiled by The Washington Post contains detailed information on homicides that occurred in 50 of the largest U.S. cities between January 1, 2007, and December 31, 2017. Each row in the dataset represents a single homicide case. The data were collected from local police departments and publicly available police records, and later curated by The Washington Post for public use.  
 The dataset contains variables: "uid", "reported_date", "victim_last", "victim_first", "victim_race", "victim_age", "victim_sex", "city", "state", "lat", "lon", "disposition"  
 
 ```{r}
@@ -135,7 +141,6 @@ city_state = homicides_df |>
     .groups = "drop"
   ) |>
   view()
-
 ```
 
 ```{r}
