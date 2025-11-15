@@ -76,8 +76,8 @@ one_sample_sim = function(mu, sigma = 5, n_subj = 30, n_sim = 5000, conf_level =
 ```{r}
 sim_results_df =
   expand_grid(
-    mu = 0:6,
-    iter = 1:5
+    mu = 1:6,
+    iter = 1:6
   ) |> 
   mutate(
     results = map(mu, one_sample_sim)
@@ -102,7 +102,7 @@ p_power
 ```
 The plot shows a positive association between effect size and power:    
 As effect size increases, the power of the test also increases.  
-When effect size equals to 0 the power is very low (close to the significance level, around 0.05–0.1), meaning the test rarely rejects the null hypothesis when it is true.  
+When effect size equals to 0 the power is very low, meaning the test rarely rejects the null hypothesis when it is true.    
 As effect size increases to about 2, the power rises sharply (around 0.5), indicating the test becomes more capable of detecting the effect.  
 ## plot 2
 ```{r}
